@@ -40,3 +40,9 @@ The following system is suitable for the following reasons:
     * Database - MongoDB
     * Why MongoDB ? - For dynamic session data with real-time interaction logs, handling larve volumes od data at hi-speed reads and writes.
     * Redis - For caching ongoing sessions and handling real-time interactions.
+
+## Deployment & Scaling
+
+* Deployment: Each microservice, including Authentication , will be containerized with Docker. Docker Compose will handle the network setup, enabling communication between services via their names and creating separate environments for each service.
+
+* Scaling: Horizontal scaling will be implemented to deploy additional instances of the Flashcards service during peak usage times. This approach will distribute the load across multiple instances, enhancing performance and optimizing resource utilization.
