@@ -23,3 +23,22 @@ The following system is suitable for the following reasons:
 5. Simulation Service - Implements the game logic, real-time requests and updates.
 
 ![image](assets/sv_bnd.png)
+
+## Technology Stack
+
+### Technology stack
+
+1. Client
+    * React.js framework.
+2. Gateway Service
+    * Python with FastAPI (building real-time APIs )
+    * WebSocket Library: Starlett (ASGI) - for asynchronous operations and real-time features.
+3. User Service
+    * Programming language - Python / Flask, to manage user actions
+    * Database - PostgreSQL
+    * Why PostgreSQL ? - For structured relational data making it suitable for authentication and user data management
+4. Simulation Service
+    * Programming language - Python / Flask
+    * Database - MongoDB
+    * Why MongoDB ? - For dynamic session data with real-time interaction logs, handling larve volumes od data at hi-speed reads and writes.
+    * Redis - For caching ongoing sessions and handling real-time interactions.
