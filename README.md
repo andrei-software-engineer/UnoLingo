@@ -26,8 +26,6 @@ The following system is suitable for the following reasons:
 
 ## Technology Stack
 
-### Technology stack
-
 1. Client
     * React.js framework.
 2. Gateway Service
