@@ -41,6 +41,98 @@ The following system is suitable for the following reasons:
     * Why MongoDB ? - For dynamic session data with real-time interaction logs, handling larve volumes od data at hi-speed reads and writes.
     * Redis - For caching ongoing sessions and handling real-time interactions.
 
+
+## Data Management Design
+### User Service:
+#### Endpoints:
+
+1. ```POST /api/users/login``` - Authenticate a user.
+
+##### Data:
+```json
+{
+  "email": "string",
+  "password": "string"
+}
+```
+##### Response:
+```json
+{
+  "token": "string",
+  "message": "Login successful."
+}
+```
+
+2. ```GET /api/users/profile``` - Retrieve user profile information.
+
+##### Headers:
+```json
+{
+  "token": "string", //Authorization: Bearer <token>
+}
+```
+##### Response:
+```json
+{
+  "user_id": "int",
+  "name": "string",
+  "email": "string",
+  "created_at": "string"
+}
+```
+
+3. ```PUT /api/users/profile``` -  Update user profile information.
+
+##### Data:
+```json
+{
+  "name": "string",
+  "email": "string"
+}
+```
+##### Response:
+```json
+{
+  "user_id": "int",
+  "message": "Profile updated successfully."
+}
+```
+
+4. ```POST /api/users/change-password ``` - Change user password.
+
+##### Data:
+```json
+{
+  "old_password": "string",
+  "new_password": "string"
+}
+```
+##### Response:
+```json
+{
+  "user_id": "int",
+  "message": "Password changed successfully."
+}
+```
+
+5. ```POST /api/users/delete ``` - Delete a user account.
+
+##### Headers:
+```json
+{
+  "token": "string", //Authorization: Bearer <token>
+}
+```
+##### Response:
+```json
+{
+  "user_id": "int",
+  "message": "User account deleted successfully."
+}
+```
+
+
+
 ## Deployment & Scaling
 
 * Deployment: Each microservice, including Authentication , will be containerized with Docker. Docker Compose will handle the network setup, enabling communication between services via their names and creating separate environments for each service.
