@@ -2,19 +2,16 @@
 
 #### Ceban Andrei, FAF-211
 
-### 1. Assess application suitability
-The following system is suitable for the real-time language learning app due to several reasons:
+## Application Suitability
+The following system is suitable for the following reasons:
 
 * The Learning Session Service is essential and flexible as it manages core functionalities like matching users with native speakers or tutors, handling conversation sessions (text, voice, or video), and providing real-time feedback during language practice (such as pronunciation correction, vocabulary tips, or grammar suggestions).
 
+* Growing Demand for Language Learning: With increasing globalization, the need to learn new languages for travel, work, or personal growth has surged. Online learning platforms have become a preferred method for language acquisition due to their flexibility and accessibility.
 
-* Real-time interactions will occur continuously even without a distinct lobby service, necessitating scalable systems, particularly when multiple learners and tutors are engaged in live sessions simultaneously.
+* Real-time Interactions are Critical: Language learning thrives on conversation and immediate feedback. Unlike traditional self-paced apps, this platform offers real-time interactions with native speakers, which provides an immersive learning experience essential for mastering speaking and listening skills.
 
+* Convenience and Accessibility: The app connects learners and native speakers from different regions, offering users the ability to practice anytime and anywhere. This is especially valuable in regions where access to in-person language tutors is limited.
 
-* To handle its specific load, each service (Learning Sessions, User Matching, and Authentication) can scale independently. For example, during peak usage hours, there may be a greater demand on the Learning Session Service to support multiple concurrent conversations.
-
-
-* The system will manage learner-tutor interactions, user authentication, and real-time feedback as distinct services, much like platforms such as Netflix decouple their services to manage streaming, recommendations, and user authentication separately.
-
-
-### 2. Define service boundaries
+## Service boundaries
+![image](assets/sv_bnd.png)
