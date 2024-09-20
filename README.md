@@ -42,6 +42,17 @@ The following system is suitable for the following reasons:
     * Redis - For caching ongoing sessions and handling real-time interactions.
 
 
+## Communication Patterns 
+
+1. RESTful APIs:
+    * HTTP communication between external clients and services.
+
+2. gRPC:
+    * Communication between services and service discovery.
+
+3. WebSocket:
+    * For real-time, bi-directional communication.
+
 ## Data Management Design
 ### User Service:
 #### Endpoints:
