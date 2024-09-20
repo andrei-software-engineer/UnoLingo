@@ -14,7 +14,7 @@ The following system is suitable for the following reasons:
 * Convenience and Accessibility: The app connects learners and native speakers from different regions, offering users the ability to practice anytime and anywhere. This is especially valuable in regions where access to in-person language tutors is limited.
 
 ## Service boundaries
-
+  
 1. Client - Is a service which interacts with the system by making requests to the Gateway.
 2. Gateway Service - The entry point to the system, handling WebSocket connections and routing requests to the Simulation Service and User Service.
 3. Service Discovery - Is responsible for maintaining a registry of services and their instances, that way all services can communicate between them.
