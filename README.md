@@ -29,7 +29,7 @@ The following system is suitable for the following reasons:
 1. Client
     * React.js framework.
 2. Gateway Service
-    * Python with FastAPI (building real-time APIs )
+    * Node.js
     * WebSocket Library: Starlett (ASGI) - for asynchronous operations and real-time features.
 3. User Service
     * Programming language - Python / Flask, to manage user actions
@@ -159,11 +159,11 @@ The following system is suitable for the following reasons:
 ```json
 {
   "session_id": "int",
-  "message": "Simulation session started successfully."
+  "message": "Simulation session started successfully."  
 }
 ```
 
-2. ```POST /api/simulaiton/send-message``` - Send a message.
+2. ```Websocket /api/simulaiton/loggy_id``` - Send a message.
 
 ##### Data:
 ```json
