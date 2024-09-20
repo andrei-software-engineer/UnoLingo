@@ -131,6 +131,63 @@ The following system is suitable for the following reasons:
 }
 ```
 
+### Simulator Service:
+#### Endpoints:
+
+1. ```POST /api/simulaiton/start-session``` - Start a new simulation session.
+
+##### Data:
+```json
+{
+  "user_id": "int",
+  "language_pair": "string",
+  "session_type": "text"
+}
+```
+##### Response:
+```json
+{
+  "session_id": "int",
+  "message": "Simulation session started successfully."
+}
+```
+
+2. ```POST /api/simulaiton/send-message``` - Send a message.
+
+##### Data:
+```json
+{
+  "session_id": "int",
+  "user_id": "int",
+  "message": "string"
+}
+```
+##### Response:
+```json
+{
+  "message_id": "int",
+  "timestamp": "string",
+  "message": "Message sent successfully."
+}
+```
+
+
+3. ```POST /api/simulaiton/end-session``` - End the session.
+
+##### Data:
+```json
+{
+  "session_id": "int",
+  "user_id": "int"
+}
+```
+##### Response:
+```json
+{
+  "session_id": "int",
+  "message": "Simulation session ended successfully."
+}
+```
 
 
 ## Deployment & Scaling
