@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Chat</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.js" integrity="sha512-luMnTJZ7oEchNDZAtQhgjomP1eZefnl82ruTH/3Oj/Yu5qYtwL7+dVRccACS/Snp1lFXq188XFipHKYE75IaQQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <style>
+        #messages {
+            border: 1px solid #ccc;
+            height: 300px;
+            overflow-y: scroll;
+            padding: 10px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>WebSocket Chat</h1>
+
+    <label for="token">JWT Token:</label>
+    <input id="token" type="text" placeholder="Enter your JWT token" />
+    <br /><br />
+
+    <label for="room">Room Name:</label>
+    <input id="room" type="text" placeholder="Enter room name" />
+    <button onclick="joinRoom()">Join Room</button>
+    <br /><br />
+
+    <label for="message">Message:</label>
+    <input id="message" type="text" placeholder="Enter message" />
+    <button onclick="sendMessage()">Send Message</button>
+
+    <div id="messages"></div> <!-- Message display area -->
+
+    <script>
+        const socket = io('http://localhost:5001');
+
+        function joinRoom() {
+            const token = document.getElementById('token').value;  // Get the token from the input field
+            const roomName = document.getElementById('room').value; // Get the room name from the input field
+            
+            if (!token || !roomName) {
+                alert("Please enter both JWT token and room name.");
+                return;
+            }
+
+            socket.emit('joinRoom', { room: roomName, token: token }); // Emit joinRoom event
+            addMessage(`Attempting to join room: ${roomName} with token: ${token}`);
+        }
+
+        function sendMessage() {
+            const token = document.getElementById('token').value; // Get the token from the input field
+            const roomName = document.getElementById('room').value; // Get the room name from the input field
+            const message = document.getElementById('message').value; // Get the message from the input field
+            
+            if (!token || !roomName || !message) {
+                alert("Please enter JWT token, room name, and message.");
+                return;
+            }
+
+            socket.emit('message', { room: roomName, message: message, token: token }); // Emit message event
+            addMessage(`Sending message to room: ${roomName} with token: ${token}`);
+        }
+
+        socket.on('message', function(msg) {
+            addMessage("Message received: " + msg); // Display received messages in the div
+        });
+
+        function addMessage(msg) {
+            const messagesDiv = document.getElementById('messages');
+            messagesDiv.innerHTML += `<div>${msg}</div>`; // Append message to the messages div
+            messagesDiv.scrollTop = messagesDiv.scrollHeight; // Scroll to the bottom
+        }
+    </script>
+</body>
+</html>

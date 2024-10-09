@@ -1,40 +1,56 @@
+// server.js
+
 const express = require('express');
 const axios = require('axios');
-const redis = require('redis');
+const cors = require('cors');
+
 const app = express();
+const PORT = 3000; // You can change this to any available port
 
-const client = redis.createClient();  // Redis client for caching
+// Middleware
+app.use(cors());
+app.use(express.json()); // Parse JSON bodies
 
-app.get('/status', async (req, res) => {
+// Authentication microservice URL
+const AUTH_SERVICE_URL = 'http://localhost:5003';
+
+// Proxy endpoints to the authentication service
+
+// Register new user
+app.post('/gateway/register', async (req, res) => {
     try {
-        let serviceAStatus = await axios.get('http://localhost:5002/status');
-        let serviceBStatus = await axios.get('http://localhost:5001/status');
-        res.json({
-            "Service A": serviceAStatus.data,
-            "Service B": serviceBStatus.data
-        });
-    } catch (err) {
-        res.status(500).json({ error: 'Error communicating with services' });
+        const response = await axios.post(`${AUTH_SERVICE_URL}/register`, req.body);
+        res.status(response.status).json(response.data);
+    } catch (error) {
+        res.status(error.response?.status || 500).json(error.response?.data || { error: 'Internal Server Error' });
     }
 });
 
-app.get('/communicate', async (req, res) => {
+// Login and issue JWT token
+app.post('/login', async (req, res) => {
     try {
-        const cacheKey = 'service_a_message';
-        client.get(cacheKey, async (err, data) => {
-            if (data) {
-                return res.json({ "message_from_cache": JSON.parse(data) });
-            } else {
-                let response = await axios.get('http://localhost:5002/communicate');
-                client.setex(cacheKey, 60, JSON.stringify(response.data));  // Cache for 60 seconds
-                res.json({ "message_from_service_a": response.data });
+        const response = await axios.post(`${AUTH_SERVICE_URL}/login`, req.body);
+        res.status(response.status).json(response.data);
+    } catch (error) {
+        res.status(error.response?.status || 500).json(error.response?.data || { error: 'Internal Server Error' });
+    }
+});
+
+// Validate JWT token
+app.get('/gateway/validate_token', async (req, res) => {
+    try {
+        const response = await axios.get(`${AUTH_SERVICE_URL}/validate_token`, {
+            headers: {
+                'Authorization': req.headers['authorization'] // Forward the Authorization header
             }
         });
-    } catch (err) {
-        res.status(500).json({ error: 'Error communicating with Service A' });
+        res.status(response.status).json(response.data);
+    } catch (error) {
+        res.status(error.response?.status || 500).json(error.response?.data || { error: 'Internal Server Error' });
     }
 });
 
-app.listen(3000, () => {
-    console.log('Gateway is running on port 3000');
+// Start the server
+app.listen(PORT, () => {
+    console.log(`Gateway running on http://localhost:${PORT}`);
 });
