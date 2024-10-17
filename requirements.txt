@@ -1,0 +1,4 @@
+Flask
+redis
+pyjwt
+python-socketio
