@@ -33,12 +33,10 @@ The following system is suitable for the following reasons:
     * WebSocket Library: Starlett (ASGI) - for asynchronous operations and real-time features.
 3. User Service
     * Programming language - Python / Flask, to manage user actions
-    * Database - PostgreSQL
-    * Why PostgreSQL ? - For structured relational data making it suitable for authentication and user data management
+    * Database - Sqlite
 4. Simulation Service
     * Programming language - Python / Flask
-    * Database - MongoDB
-    * Why MongoDB ? - For dynamic session data with real-time interaction logs, handling larve volumes od data at hi-speed reads and writes.
+    * Database - Sqlite
     * Redis - For caching ongoing sessions and handling real-time interactions.
 
 
