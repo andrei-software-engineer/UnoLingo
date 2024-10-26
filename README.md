@@ -63,12 +63,6 @@ This API Gateway serves as a central access point for managing requests between 
 
 - [Installation](#installation)
 - [Endpoints](#endpoints)
-  - [Register a New User](#1.)
-  - [Login and Issue JWT Token](#2.)
-  - [Validate JWT Token](#3.)
-  - [Get User Information by ID](#4.)
-  - [Get All Users](#5.)
-  - [Gateway Status](#6.)
 
 ## Installation
 
@@ -78,7 +72,7 @@ To run the Gateway API, ensure that you have Node.js and Express installed. Inst
 npm install
 ```
 
-### Endpoints
+### Endpoints for Authentication
 
 ### 1. Register a New User
 
@@ -90,8 +84,8 @@ npm install
 **Request Body**:
 ```json
 {
-    "username": "string",
-    "password": "string"
+    "username": "Teacher",
+    "password": "123456"
 }
 ```
 
@@ -111,8 +105,8 @@ npm install
 **Request Body**:
 ```json
 {
-    "username": "string",
-    "password": "string"
+    "username": "Teacher",
+    "password": "123456"
 }
 ```
 
@@ -174,6 +168,129 @@ npm install
 **Responses**:
 - `200 OK`: Returns status of the gateway and auth service.
 - `500 Internal Server Error`: Failed to retrieve service status.
+
+## Endpoints for Chat 
+
+### 1. Create Room
+
+- **Endpoint**: `/socket.io/createRoom`
+- **Method**: `SocketIO Event`
+- **Description**: Creates a new chat room.
+
+**Request Data**:
+```json
+{
+    "room": "string"  // Name of the room to create
+}
+```
+
+**Responses**:
+- Room "{room_name}" created.: Indicates the room has been created successfully.
+- Room "{room_name}" already exists.: The specified room name is already in use.
+
+### 2. Join Room
+
+- **Endpoint:** `/socket.io/joinRoom`  
+- **Method:** SocketIO Event  
+- **Description:** Joins an existing chat room.
+
+### Request Data:
+
+```json
+{
+    "token": "string",  // JWT token for authentication
+    "room": "string"    // Name of the room to join
+}
+```
+
+**Responses**:
+- Joined room: {room_name} as {username}: Indicates successful joining of the room.
+- Invalid token. You cannot join the room.: Token validation failed.
+- Room "{room_name}" does not exist.: The specified room does not exist.
+
+
+### 3. Leave Room
+
+- **Endpoint**: `/socket.io/leaveRoom`
+- **Method**: SocketIO Event
+- **Description**: Leaves a chat room.
+
+#### Request Data:
+
+```json
+{
+    "room": "string"  // Name of the room to leave
+}
+```
+
+**Responses**:
+- You left room: {room_name}: Indicates successful exit from the room.
+
+
+### 4. Get Rooms
+
+- **Endpoint**: `/socket.io/getRooms`
+- **Method**: SocketIO Event
+- **Description**: Fetches the list of available chat rooms.
+
+**Responses**:
+- List of room names : Sent back to the user, containing the names of all available chat rooms.
+
+
+### 5. Get Room Messages
+
+- **Endpoint**: `/socket.io/getRoomMessages`
+- **Method**: SocketIO Event
+- **Description**: Retrieves messages from a specific chat room.
+
+#### Request Data:
+
+```json
+{
+    "room": "string"  // Name of the room to fetch messages from
+}
+```
+
+**Responses**:
+- List of messages from the specified room, formatted as "{username}: {message}".
+
+
+### 6. Delete Room
+
+- **Endpoint**: `/socket.io/deleteRoom`
+- **Method**: SocketIO Event
+- **Description**: Deletes a chat room.
+
+#### Request Data:
+
+```json
+{
+    "room": "string"  // Name of the room to delete
+}
+```
+
+**Responses**:
+- Room "{room_name}" deleted.: Indicates successful deletion of the room.
+
+### 7. Send Message
+
+- **Endpoint**: `/socket.io/message`
+- **Method**: SocketIO Event
+- **Description**: Sends a message to a chat room.
+
+#### Request Data:
+
+```json
+{
+    "token": "string",  // JWT token for authentication
+    "room": "string",    // Name of the room to send the message to
+    "message": "string"  // The message content
+}
+```
+
+**Responses**:
+- Invalid token. You cannot send messages.: Token validation failed.
+- You are not in this room.: User is not in the specified room.
 
 
 ## Deployment & Scaling
