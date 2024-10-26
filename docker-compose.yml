@@ -1,0 +1,87 @@
+version: '3.8'
+
+services:
+
+  sm_redis:
+    image: redis:latest
+    container_name: sm_redis
+    ports:
+      - "6380:6379"
+    command: redis-server --save "" --appendonly no
+
+  api-gateway:
+    container_name: api-gateway
+    build:
+      context: ./api-gateway
+    environment:
+      - PORT=3000
+      - SM_REDIS_URL=redis://sm_redis:6379
+    ports:
+      - "3000:3000"  # Expose port 3000 to access the gateway
+    depends_on:
+      - auth_service
+      - chat_service
+      - sm_redis
+      
+
+  service-discovery:
+    build:
+      context: ./service-discovery
+    environment:
+      - PORT=8080
+      - SM_REDIS_URL=redis://sm_redis:6379
+    ports:
+      - "8080:8080"
+    depends_on:
+      - sm_redis
+
+  auth_service:
+    build: ./sA
+    ports:
+      - "5003:5003"
+    depends_on:
+      - sm_redis
+      - service-discovery
+    command: sh -c "python3 auth_service.py -p=auth_service"
+
+
+
+  chat_service:
+    build: ./sB
+    ports:
+      - "5005:5000"
+    depends_on:
+      - sm_redis
+      - service-discovery
+    # volumes:
+    #   - ./app/chat_service.db
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  # auth_service_2:
+  #   build: ./sA
+  #   ports:
+  #     - "5004:5003"
+  #   depends_on:
+  #     - sm_redis
+  #     - service-discovery
+  #   command: sh -c "python3 auth_service.py -p=auth_service_2"

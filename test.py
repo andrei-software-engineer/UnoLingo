@@ -1,6 +1,6 @@
 import unittest
 import json
-from auth_service import app, init_db
+from sA.auth_service import app, init_db
 import jwt
 import sqlite3
 import datetime
