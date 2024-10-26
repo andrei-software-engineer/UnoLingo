@@ -55,25 +55,6 @@ The following system is suitable for the following reasons:
 ### User Service:
 #### Endpoints:
 
-# Gateway API
-
-This API Gateway serves as a central access point for managing requests between clients and backend services, with rate limiting, request timeout handling, and service discovery functionality.
-
-## Table of Contents
-
-- [Installation](#installation)
-- [Endpoints](#endpoints)
-
-## Installation
-
-To run the Gateway API, ensure that you have Node.js and Express installed. Install dependencies with:
-
-```bash
-npm install
-```
-
-### Endpoints for Authentication
-
 ### 1. Register a New User
 
 - **Endpoint**: `/gateway/register`
@@ -169,7 +150,9 @@ npm install
 - `200 OK`: Returns status of the gateway and auth service.
 - `500 Internal Server Error`: Failed to retrieve service status.
 
-## Endpoints for Chat 
+
+### Chat Service:
+#### Endpoints:
 
 ### 1. Create Room
 
@@ -293,6 +276,58 @@ npm install
 - You are not in this room.: User is not in the specified room.
 
 
+## Running the Application with Docker
+
+To run the application using Docker, follow these steps:
+
+### Prerequisites
+
+- Ensure you have Docker installed on your machine. You can download it from [Docker's official website](https://www.docker.com/get-started).
+
+### Setup
+
+1. **Clone the repository** (if you haven't already):
+   ```bash
+   git clone <repository-url>
+   cd <repository-directory>
+
+2. ** Navigate to the project directory where the docker-compose.yml file is located.
+
+### Running the Services
+
+To build and run the services using Docker Compose, use the following command:
+
+```bash
+docker-compose up --build
+```
+
+This command will:
+
+- **Build the images** for the `api-gateway`, `auth_service`, and `chat_service`.
+- **Start all services** defined in the `docker-compose.yml` file.
+
+
+## Accessing the Services
+
+Once the containers are up and running, you can access the services at the following URLs:
+
+- **API Gateway:** [http://localhost:3000](http://localhost:3000)
+- **Auth Service:** [http://localhost:5003](http://localhost:5003)
+- **Chat Service:** [http://localhost:5005](http://localhost:5005)
+- **Service Discovery:** [http://localhost:8080](http://localhost:8080)
+
+
+## Stopping the Services
+
+To stop the running services, you can either:
+
+1. Press `Ctrl + C` in the terminal where Docker Compose is running, or
+2. Run the following command:
+
+   ```bash
+   docker-compose down
+
+   
 ## Deployment & Scaling
 
 * Deployment: Each microservice, including Authentication , will be containerized with Docker. Docker Compose will handle the network setup, enabling communication between services via their names and creating separate environments for each service.
