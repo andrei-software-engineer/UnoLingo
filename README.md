@@ -55,149 +55,51 @@ The following system is suitable for the following reasons:
 ### User Service:
 #### Endpoints:
 
-1. ```POST /api/users/login``` - Authenticate a user.
+# Gateway API
 
-##### Data:
-```json
-{
-  "email": "string",
-  "password": "string"
-}
-```
-##### Response:
-```json
-{
-  "token": "string",
-  "message": "Login successful."
-}
-```
+This API Gateway serves as a central access point for managing requests between clients and backend services, with rate limiting, request timeout handling, and service discovery functionality.
 
-2. ```GET /api/users/profile``` - Retrieve user profile information.
+## Table of Contents
 
-##### Headers:
-```json
-{
-  "token": "string", //Authorization: Bearer <token>
-}
-```
-##### Response:
-```json
-{
-  "user_id": "int",
-  "name": "string",
-  "email": "string",
-  "created_at": "string"
-}
-```
+- [Installation](#installation)
+- [Endpoints](#endpoints)
+  - [Register a New User](#register-a-new-user)
+  - [Login and Issue JWT Token](#login-and-issue-jwt-token)
+  - [Validate JWT Token](#validate-jwt-token)
+  - [Get User Information by ID](#get-user-information-by-id)
+  - [Get All Users](#get-all-users)
+  - [Gateway Status](#gateway-status)
+- [Error Handling](#error-handling)
 
-3. ```PUT /api/users/profile``` -  Update user profile information.
+## Installation
 
-##### Data:
-```json
-{
-  "name": "string",
-  "email": "string"
-}
-```
-##### Response:
-```json
-{
-  "user_id": "int",
-  "message": "Profile updated successfully."
-}
-```
+To run the Gateway API, ensure that you have Node.js and Express installed. Install dependencies with:
 
-4. ```POST /api/users/change-password ``` - Change user password.
-
-##### Data:
-```json
-{
-  "old_password": "string",
-  "new_password": "string"
-}
-```
-##### Response:
-```json
-{
-  "user_id": "int",
-  "message": "Password changed successfully."
-}
-```
-
-5. ```POST /api/users/delete ``` - Delete a user account.
-
-##### Headers:
-```json
-{
-  "token": "string", //Authorization: Bearer <token>
-}
-```
-##### Response:
-```json
-{
-  "user_id": "int",
-  "message": "User account deleted successfully."
-}
-```
-
-### Simulator Service:
-#### Endpoints:
-
-1. ```POST /api/simulaiton/start-session``` - Start a new simulation session.
-
-##### Data:
-```json
-{
-  "user_id": "int",
-  "language_pair": "string",
-  "session_type": "text"
-}
-```
-##### Response:
-```json
-{
-  "session_id": "int",
-  "message": "Simulation session started successfully."  
-}
-```
-
-2. ```Websocket /api/simulaiton/loggy_id``` - Send a message.
-
-##### Data:
-```json
-{
-  "session_id": "int",
-  "user_id": "int",
-  "message": "string"
-}
-```
-##### Response:
-```json
-{
-  "message_id": "int",
-  "timestamp": "string",
-  "message": "Message sent successfully."
-}
+```bash
+npm install
 ```
 
 
-3. ```POST /api/simulaiton/end-session``` - End the session.
+Endpoints
+1. Register a New User
+Endpoint: /gateway/register
+Method: POST
+Rate Limiting: Max 10 requests per minute per IP
+Description: Registers a new user with the authentication service.
+Request Body:
 
-##### Data:
-```json
+json
+Copy code
 {
-  "session_id": "int",
-  "user_id": "int"
+    "username": "string",
+    "password": "string"
 }
-```
-##### Response:
-```json
-{
-  "session_id": "int",
-  "message": "Simulation session ended successfully."
-}
-```
+Responses:
 
+201 Created: User registered successfully.
+429 Too Many Requests: Rate limit exceeded.
+504 Gateway Timeout: Request to the auth service timed out.
+500 Internal Server Error: Service discovery or auth service failure.
 
 ## Deployment & Scaling
 
