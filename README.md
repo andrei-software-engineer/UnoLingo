@@ -79,27 +79,103 @@ To run the Gateway API, ensure that you have Node.js and Express installed. Inst
 npm install
 ```
 
+### Endpoints
 
-Endpoints
-1. Register a New User
-Endpoint: /gateway/register
-Method: POST
-Rate Limiting: Max 10 requests per minute per IP
-Description: Registers a new user with the authentication service.
-Request Body:
+### 1. Register a New User
 
-json
-Copy code
+- **Endpoint**: `/gateway/register`
+- **Method**: `POST`
+- **Rate Limiting**: Max 10 requests per minute per IP
+- **Description**: Registers a new user with the authentication service.
+
+**Request Body**:
+```json
 {
     "username": "string",
     "password": "string"
 }
-Responses:
+```
 
-201 Created: User registered successfully.
-429 Too Many Requests: Rate limit exceeded.
-504 Gateway Timeout: Request to the auth service timed out.
+- Responses:
+
+- ** 201 Created: User registered successfully.
+- ** 429 Too Many Requests: Rate limit exceeded.
+- ** 504 Gateway Timeout: Request to the auth service timed out.
+- ** 500 Internal Server Error: Service discovery or auth service failure.
+
+### 2. Login and Issue JWT Token
+
+- **Endpoint**: `/gateway/login`
+- **Method**: `POST`
+- **Description**: Authenticates a user and issues a JWT token.
+
+**Request Body**:
+```json
+{
+    "username": "string",
+    "password": "string"
+}
+```
+
+- Responses:
+
+200 OK: Login successful, token issued.
+401 Unauthorized: Incorrect credentials.
 500 Internal Server Error: Service discovery or auth service failure.
+
+### 3. Validate JWT Token
+
+- **Endpoint**: `/gateway/validate_token`
+- **Method**: `GET`
+- **Description**: Validates a JWT token with the authentication service.
+
+**Headers**:
+- `Authorization`: Bearer token
+
+**Responses**:
+- `200 OK`: Token is valid.
+- `401 Unauthorized`: Token is invalid or missing.
+- `500 Internal Server Error`: Service discovery or auth service failure.
+
+
+
+### 4. Get User Information by ID
+
+- **Endpoint**: `/gateway/user/:id`
+- **Method**: `GET`
+- **Description**: Retrieves user information by user ID.
+
+**Parameters**:
+- `id`: User ID to retrieve information for
+
+**Responses**:
+- `200 OK`: User information retrieved.
+- `404 Not Found`: User not found.
+- `500 Internal Server Error`: Service discovery or auth service failure.
+
+
+### 5. Get All Users
+
+- **Endpoint**: `/gateway/users`
+- **Method**: `GET`
+- **Description**: Retrieves information for all users.
+
+**Responses**:
+- `200 OK`: List of users.
+- `500 Internal Server Error`: Service discovery or auth service failure.
+
+---
+
+### 6. Gateway Status
+
+- **Endpoint**: `/status`
+- **Method**: `GET`
+- **Description**: Retrieves the status of the gateway and authentication service.
+
+**Responses**:
+- `200 OK`: Returns status of the gateway and auth service.
+- `500 Internal Server Error`: Failed to retrieve service status.
+
 
 ## Deployment & Scaling
 
