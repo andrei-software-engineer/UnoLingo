@@ -303,7 +303,7 @@ docker-compose up --build
 
 This command will:
 
-- **Build the images** for the `api-gateway`, `auth_service`, and `chat_service`.
+- **Build the images** for the `api-gateway`, `auth_service`, `chat_service`,  `discovery_service` and `redis`.
 - **Start all services** defined in the `docker-compose.yml` file.
 
 
