@@ -63,13 +63,12 @@ This API Gateway serves as a central access point for managing requests between 
 
 - [Installation](#installation)
 - [Endpoints](#endpoints)
-  - [Register a New User](#register-a-new-user)
-  - [Login and Issue JWT Token](#login-and-issue-jwt-token)
-  - [Validate JWT Token](#validate-jwt-token)
-  - [Get User Information by ID](#get-user-information-by-id)
-  - [Get All Users](#get-all-users)
-  - [Gateway Status](#gateway-status)
-- [Error Handling](#error-handling)
+  - [Register a New User](#1.)
+  - [Login and Issue JWT Token](#2.)
+  - [Validate JWT Token](#3.)
+  - [Get User Information by ID](#4.)
+  - [Get All Users](#5.)
+  - [Gateway Status](#6.)
 
 ## Installation
 
