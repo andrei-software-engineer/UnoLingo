@@ -55,150 +55,279 @@ The following system is suitable for the following reasons:
 ### User Service:
 #### Endpoints:
 
-1. ```POST /api/users/login``` - Authenticate a user.
+### 1. Register a New User
 
-##### Data:
-```json
-{
-  "email": "string",
-  "password": "string"
-}
-```
-##### Response:
-```json
-{
-  "token": "string",
-  "message": "Login successful."
-}
-```
+- **Endpoint**: `/gateway/register`
+- **Method**: `POST`
+- **Rate Limiting**: Max 10 requests per minute per IP
+- **Description**: Registers a new user with the authentication service.
 
-2. ```GET /api/users/profile``` - Retrieve user profile information.
-
-##### Headers:
+**Request Body**:
 ```json
 {
-  "token": "string", //Authorization: Bearer <token>
-}
-```
-##### Response:
-```json
-{
-  "user_id": "int",
-  "name": "string",
-  "email": "string",
-  "created_at": "string"
+    "username": "Teacher",
+    "password": "123456"
 }
 ```
 
-3. ```PUT /api/users/profile``` -  Update user profile information.
+- Responses:
 
-##### Data:
-```json
-{
-  "name": "string",
-  "email": "string"
-}
-```
-##### Response:
-```json
-{
-  "user_id": "int",
-  "message": "Profile updated successfully."
-}
-```
+- ** 201 Created: User registered successfully.
+- ** 429 Too Many Requests: Rate limit exceeded.
+- ** 504 Gateway Timeout: Request to the auth service timed out.
+- ** 500 Internal Server Error: Service discovery or auth service failure.
 
-4. ```POST /api/users/change-password ``` - Change user password.
+### 2. Login and Issue JWT Token
 
-##### Data:
+- **Endpoint**: `/gateway/login`
+- **Method**: `POST`
+- **Description**: Authenticates a user and issues a JWT token.
+
+**Request Body**:
 ```json
 {
-  "old_password": "string",
-  "new_password": "string"
-}
-```
-##### Response:
-```json
-{
-  "user_id": "int",
-  "message": "Password changed successfully."
+    "username": "Teacher",
+    "password": "123456"
 }
 ```
 
-5. ```POST /api/users/delete ``` - Delete a user account.
+- Responses:
 
-##### Headers:
-```json
-{
-  "token": "string", //Authorization: Bearer <token>
-}
-```
-##### Response:
-```json
-{
-  "user_id": "int",
-  "message": "User account deleted successfully."
-}
-```
+200 OK: Login successful, token issued.
+401 Unauthorized: Incorrect credentials.
+500 Internal Server Error: Service discovery or auth service failure.
 
-### Simulator Service:
+### 3. Validate JWT Token
+
+- **Endpoint**: `/gateway/validate_token`
+- **Method**: `GET`
+- **Description**: Validates a JWT token with the authentication service.
+
+**Headers**:
+- `Authorization`: Bearer token
+
+**Responses**:
+- `200 OK`: Token is valid.
+- `401 Unauthorized`: Token is invalid or missing.
+- `500 Internal Server Error`: Service discovery or auth service failure.
+
+
+
+### 4. Get User Information by ID
+
+- **Endpoint**: `/gateway/user/:id`
+- **Method**: `GET`
+- **Description**: Retrieves user information by user ID.
+
+**Parameters**:
+- `id`: User ID to retrieve information for
+
+**Responses**:
+- `200 OK`: User information retrieved.
+- `404 Not Found`: User not found.
+- `500 Internal Server Error`: Service discovery or auth service failure.
+
+
+### 5. Get All Users
+
+- **Endpoint**: `/gateway/users`
+- **Method**: `GET`
+- **Description**: Retrieves information for all users.
+
+**Responses**:
+- `200 OK`: List of users.
+- `500 Internal Server Error`: Service discovery or auth service failure.
+
+---
+
+### 6. Gateway Status
+
+- **Endpoint**: `/status`
+- **Method**: `GET`
+- **Description**: Retrieves the status of the gateway and authentication service.
+
+**Responses**:
+- `200 OK`: Returns status of the gateway and auth service.
+- `500 Internal Server Error`: Failed to retrieve service status.
+
+
+### Chat Service:
 #### Endpoints:
 
-1. ```POST /api/simulaiton/start-session``` - Start a new simulation session.
+### 1. Create Room
 
-##### Data:
+- **Endpoint**: `/socket.io/createRoom`
+- **Method**: `SocketIO Event`
+- **Description**: Creates a new chat room.
+
+**Request Data**:
 ```json
 {
-  "user_id": "int",
-  "language_pair": "string",
-  "session_type": "text"
-}
-```
-##### Response:
-```json
-{
-  "session_id": "int",
-  "message": "Simulation session started successfully."  
+    "room": "string"  // Name of the room to create
 }
 ```
 
-2. ```Websocket /api/simulaiton/loggy_id``` - Send a message.
+**Responses**:
+- Room "{room_name}" created.: Indicates the room has been created successfully.
+- Room "{room_name}" already exists.: The specified room name is already in use.
 
-##### Data:
+### 2. Join Room
+
+- **Endpoint:** `/socket.io/joinRoom`  
+- **Method:** SocketIO Event  
+- **Description:** Joins an existing chat room.
+
+### Request Data:
+
 ```json
 {
-  "session_id": "int",
-  "user_id": "int",
-  "message": "string"
-}
-```
-##### Response:
-```json
-{
-  "message_id": "int",
-  "timestamp": "string",
-  "message": "Message sent successfully."
-}
-```
-
-
-3. ```POST /api/simulaiton/end-session``` - End the session.
-
-##### Data:
-```json
-{
-  "session_id": "int",
-  "user_id": "int"
-}
-```
-##### Response:
-```json
-{
-  "session_id": "int",
-  "message": "Simulation session ended successfully."
+    "token": "string",  // JWT token for authentication
+    "room": "string"    // Name of the room to join
 }
 ```
 
+**Responses**:
+- Joined room: {room_name} as {username}: Indicates successful joining of the room.
+- Invalid token. You cannot join the room.: Token validation failed.
+- Room "{room_name}" does not exist.: The specified room does not exist.
 
+
+### 3. Leave Room
+
+- **Endpoint**: `/socket.io/leaveRoom`
+- **Method**: SocketIO Event
+- **Description**: Leaves a chat room.
+
+#### Request Data:
+
+```json
+{
+    "room": "string"  // Name of the room to leave
+}
+```
+
+**Responses**:
+- You left room: {room_name}: Indicates successful exit from the room.
+
+
+### 4. Get Rooms
+
+- **Endpoint**: `/socket.io/getRooms`
+- **Method**: SocketIO Event
+- **Description**: Fetches the list of available chat rooms.
+
+**Responses**:
+- List of room names : Sent back to the user, containing the names of all available chat rooms.
+
+
+### 5. Get Room Messages
+
+- **Endpoint**: `/socket.io/getRoomMessages`
+- **Method**: SocketIO Event
+- **Description**: Retrieves messages from a specific chat room.
+
+#### Request Data:
+
+```json
+{
+    "room": "string"  // Name of the room to fetch messages from
+}
+```
+
+**Responses**:
+- List of messages from the specified room, formatted as "{username}: {message}".
+
+
+### 6. Delete Room
+
+- **Endpoint**: `/socket.io/deleteRoom`
+- **Method**: SocketIO Event
+- **Description**: Deletes a chat room.
+
+#### Request Data:
+
+```json
+{
+    "room": "string"  // Name of the room to delete
+}
+```
+
+**Responses**:
+- Room "{room_name}" deleted.: Indicates successful deletion of the room.
+
+### 7. Send Message
+
+- **Endpoint**: `/socket.io/message`
+- **Method**: SocketIO Event
+- **Description**: Sends a message to a chat room.
+
+#### Request Data:
+
+```json
+{
+    "token": "string",  // JWT token for authentication
+    "room": "string",    // Name of the room to send the message to
+    "message": "string"  // The message content
+}
+```
+
+**Responses**:
+- Invalid token. You cannot send messages.: Token validation failed.
+- You are not in this room.: User is not in the specified room.
+
+
+## Running the Application with Docker
+
+To run the application using Docker, follow these steps:
+
+### Prerequisites
+
+- Ensure you have Docker installed on your machine. You can download it from [Docker's official website](https://www.docker.com/get-started).
+
+### Setup
+
+1. **Clone the repository** (if you haven't already):
+   ```bash
+   git clone <repository-url>
+   cd <repository-directory>
+
+2. ** Navigate to the project directory where the docker-compose.yml file is located.
+
+### Running the Services
+
+To build and run the services using Docker Compose, use the following command:
+
+```bash
+docker-compose up --build
+```
+
+This command will:
+
+- **Build the images** for the `api-gateway`, `auth_service`, `chat_service`,  `discovery_service` and `redis`.
+- **Start all services** defined in the `docker-compose.yml` file.
+
+
+## Accessing the Services
+
+Once the containers are up and running, you can access the services at the following URLs:
+
+- **API Gateway:** [http://localhost:3000](http://localhost:3000)
+- **Auth Service:** [http://localhost:5003](http://localhost:5003)
+- **Chat Service:** [http://localhost:5005](http://localhost:5005)
+- **Service Discovery:** [http://localhost:8080](http://localhost:8080)
+
+
+## Stopping the Services
+
+To stop the running services, you can either:
+
+1. Press `Ctrl + C` in the terminal where Docker Compose is running, or
+2. Run the following command:
+
+   ```bash
+   docker-compose down
+
+   
 ## Deployment & Scaling
 
 * Deployment: Each microservice, including Authentication , will be containerized with Docker. Docker Compose will handle the network setup, enabling communication between services via their names and creating separate environments for each service.
