@@ -22,7 +22,7 @@ The following system is suitable for the following reasons:
 4. User Service - Is responsible for handling user registration, authentification, data management.
 5. Simulation Service - Implements the game logic, real-time requests and updates.
 
-![image](assets/svd.png)
+![image](assets/img.png)
 
 ## Technology Stack
 
