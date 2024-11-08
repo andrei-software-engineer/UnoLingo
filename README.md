@@ -24,6 +24,23 @@ The following system is suitable for the following reasons:
 
 ![image](assets/img.png)
 
+## Database replication:
+
+- For the User service are added DB replicas, where we have one Master DB and two Slave DBs.
+
+## ELK Stack:
+
+# It is needed for logging and monitoring :
+
+- Logstash - Responsible for aggregating and processing log data from all services (API Gateway, User Service, Chat Service, Redis, etc.). It acts as the pipeline for collecting logs.
+- Elasticsearch - Serves as the indexing and storage engine for logs. All logs processed by Logstash are stored in Elasticsearch, allowing fast searches and complex queries on the data.
+- Kibana - Provides visualization and analysis tools for the logs stored in Elasticsearch. Kibana is used to create dashboards and alerts for monitoring key metrics.
+
+## Consistent Hashing for Redis cache:
+
+- Redis is set up with consistent hashing to distribute cache data evenly across nodes, which ensures balanced load distribution and minimizes data movement when scaling.
+- It is configured as an HA Cluster. This ensures that even if one node fails, others can continue to serve cached data, supporting system resilience.
+
 ## Technology Stack
 
 1. Client
