@@ -30,7 +30,7 @@ The following system is suitable for the following reasons:
 
 ## ELK Stack:
 
-# It is needed for logging and monitoring :
+## It is needed for logging and monitoring :
 
 - Logstash - Responsible for aggregating and processing log data from all services (API Gateway, User Service, Chat Service, Redis, etc.). It acts as the pipeline for collecting logs.
 - Elasticsearch - Serves as the indexing and storage engine for logs. All logs processed by Logstash are stored in Elasticsearch, allowing fast searches and complex queries on the data.
