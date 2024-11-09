@@ -22,7 +22,7 @@ The following system is suitable for the following reasons:
 4. User Service - Is responsible for handling user registration, authentification, data management.
 5. Simulation Service - Implements the game logic, real-time requests and updates.
 
-![image](assets/img.png)
+![image](assets/img2.png)
 
 ## Saga Coordinator:
 - These are needed to orchestrate 2PC transactions (for transaction coordinator) and to handle long running transactions (for saga coordinator)
