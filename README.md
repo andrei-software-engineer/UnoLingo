@@ -24,6 +24,10 @@ The following system is suitable for the following reasons:
 
 ![image](assets/img.png)
 
+## Saga Coordinator:
+- These are needed to orchestrate 2PC transactions (for transaction coordinator) and to handle long running transactions (for saga coordinator)
+
+
 ## Database replication:
 
 - For the User service are added DB replicas, where we have one Master DB and two Slave DBs.
