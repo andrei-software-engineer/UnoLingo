@@ -47,65 +47,111 @@ const discoverService = async (serviceName) => {
     }
 };
 
-// Register new user
-app.post('/gateway/register', registerLimiter, async (req, res) => {
+const failedServices = new Map(); // Track failing services and their retry times
+
+// Helper to check if a service is temporarily unavailable
+const isServiceBlocked = (serviceUrl) => {
+    const blockedUntil = failedServices.get(serviceUrl);
+    return blockedUntil && Date.now() < blockedUntil;
+};
+
+// Helper to block a service temporarily
+const blockService = (serviceUrl) => {
+    const blockDuration = 5 * 60 * 1000; // Block the service for 5 minutes
+    failedServices.set(serviceUrl, Date.now() + blockDuration);
+    console.log(`Service ${serviceUrl} blocked until ${new Date(Date.now() + blockDuration).toISOString()}`);
+};
+
+// Common retry logic function
+const performRequestWithRetry = async (req, res, method, endpoint, body, headers = {}) => {
+    const maxRetries = 3;
+    const maxServiceSwitches = 2;
+    let retryCount = 0;
+    let serviceSwitchCount = 0;
+    let currentServiceUrl;
+
     try {
-        const authServiceUrl = await discoverService('auth_service');
-        console.log(authServiceUrl);
-        const response = await axios.post(`${authServiceUrl}/register`, req.body);
-        res.status(response.status).json(response.data);
+        currentServiceUrl = await discoverService('auth_service');
     } catch (error) {
-        res.status(error.response?.status || 500).json(error.response?.data || { error: 'Internal Server Error' });
+        return res.status(500).json({ error: 'Initial service discovery failed. Please try again later.' });
     }
+
+    while (serviceSwitchCount < maxServiceSwitches) {
+        if (isServiceBlocked(currentServiceUrl)) {
+            console.log(`Skipping blocked service: ${currentServiceUrl}`);
+            try {
+                currentServiceUrl = await discoverService('auth_service');
+                serviceSwitchCount++;
+                continue;
+            } catch (error) {
+                return res.status(500).json({ error: 'Service discovery failed. Please try again later.' });
+            }
+        }
+
+        while (retryCount < maxRetries) {
+            try {
+                console.log(`Attempting ${method} at ${currentServiceUrl}${endpoint}, retry ${retryCount + 1}`);
+                const response = await axios({
+                    method,
+                    url: `${currentServiceUrl}${endpoint}`,
+                    data: body,
+                    headers
+                });
+                return res.status(response.status).json(response.data); // Success
+            } catch (error) {
+                retryCount++;
+                console.error(`${method} attempt ${retryCount} failed at ${currentServiceUrl}:`, error.message);
+
+                if (retryCount === maxRetries) {
+                    blockService(currentServiceUrl);
+                }
+
+                if (!error.response || error.response?.status >= 500) continue; // Retry only for 500+ errors or no response
+                return res.status(error.response?.status || 500).json(error.response?.data || { error: 'Internal Server Error' });
+            }
+        }
+
+        retryCount = 0;
+        serviceSwitchCount++;
+        try {
+            currentServiceUrl = await discoverService('auth_service');
+        } catch (error) {
+            return res.status(500).json({ error: 'Service discovery failed. Please try again later.' });
+        }
+    }
+
+    return res.status(500).json({ error: `Failed to process ${method} request after multiple attempts.` });
+};
+
+// Routes
+
+// Register new user
+app.post('/gateway/register', registerLimiter, (req, res) => {
+    performRequestWithRetry(req, res, 'POST', '/register', req.body);
 });
 
 // Login and issue JWT token
-app.post('/gateway/login', async (req, res) => {
-    try {
-        const authServiceUrl = await discoverService('auth_service');
-        const response = await axios.post(`${authServiceUrl}/login`, req.body);
-        res.status(response.status).json(response.data);
-    } catch (error) {
-        res.status(error.response?.status || 500).json(error.response?.data || { error: 'Internal Server Error' });
-    }
+app.post('/gateway/login', (req, res) => {
+    performRequestWithRetry(req, res, 'POST', '/login', req.body);
 });
 
 // Validate JWT token
-app.get('/gateway/validate_token', async (req, res) => {
-    try {
-        const authServiceUrl = await discoverService('auth_service');
-        const response = await axios.get(`${authServiceUrl}/validate_token`, {
-            headers: {
-                'Authorization': req.headers['authorization'] // Forward the Authorization header
-            }
-        });
-        res.status(response.status).json(response.data);
-    } catch (error) {
-        res.status(error.response?.status || 500).json(error.response?.data || { error: 'Internal Server Error' });
-    }
+app.get('/gateway/validate_token', (req, res) => {
+    performRequestWithRetry(req, res, 'GET', '/validate_token', null, {
+        Authorization: req.headers['authorization']
+    });
 });
 
 // Get user information by ID
-app.get('/gateway/user/:id', async (req, res) => {
-    try {
-        const authServiceUrl = await discoverService('auth_service');
-        const response = await axios.get(`${authServiceUrl}/user/${req.params.id}`);
-        res.status(response.status).json(response.data);
-    } catch (error) {
-        res.status(error.response?.status || 500).json(error.response?.data || { error: 'Internal Server Error' });
-    }
+app.get('/gateway/user/:id', (req, res) => {
+    performRequestWithRetry(req, res, 'GET', `/user/${req.params.id}`);
 });
 
 // Get all users
-app.get('/gateway/users', async (req, res) => {
-    try {
-        const authServiceUrl = await discoverService('auth_service');
-        const response = await axios.get(`${authServiceUrl}/users`);
-        res.status(response.status).json(response.data);
-    } catch (error) {
-        res.status(error.response?.status || 500).json(error.response?.data || { error: 'Internal Server Error' });
-    }
+app.get('/gateway/users', (req, res) => {
+    performRequestWithRetry(req, res, 'GET', '/users');
 });
+
 
 // Gateway status endpoint
 app.get('/status', async (req, res) => {

@@ -7,6 +7,8 @@ import signal
 import sys
 import os
 import time
+from prometheus_flask_exporter import PrometheusMetrics
+
 
 app = Flask(__name__)
 
@@ -28,6 +30,9 @@ def init_db():
     conn.close()
 
 init_db()
+
+metrics = PrometheusMetrics(app)
+
 
 SERVICE_DISCOVERY_URL = "http://service-discovery:8080"
 service_port = ModuleNotFoundError
@@ -64,6 +69,10 @@ def deregister_service():
     except Exception as e:
         print(f"Error deregistering service: {e}")
 
+
+@app.route('/metrics')
+def metrics():
+    return metrics.registry.generate_latest()
 
 # Register new user
 @app.route('/register', methods=['POST'])

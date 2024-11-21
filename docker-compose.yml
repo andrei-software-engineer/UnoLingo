@@ -45,6 +45,14 @@ services:
     command: sh -c "python3 auth_service.py -p=auth_service"
 
 
+  auth_service2:
+    build: ./sA
+    ports:
+      - "5006:5003"
+    depends_on:
+      - sm_redis
+      - service-discovery
+    command: sh -c "python3 auth_service.py -p=auth_service2"
 
   chat_service:
     build: ./sB
@@ -53,15 +61,18 @@ services:
     depends_on:
       - sm_redis
       - service-discovery
-    # volumes:
-    #   - ./app/chat_service.db
 
-
-
-
-
-
-
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    depends_on:
+      - auth_service
+      - auth_service2
+      - api-gateway
 
 
 
